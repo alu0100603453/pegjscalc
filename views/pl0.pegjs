@@ -51,7 +51,8 @@ statement = i:ID ASSIGN e:expression                                        { re
 condition = ODD e:expression                          { return e; }
           / e1:expression op:COMPARISON e2:expression { return {type: op, left: e1, right: e2}; }
 		
-expression  = t:term   r:(ADD term)*   { return tree(t,r); }
+expression  = t:(p:ADD? t:term {return p?{type: p, value: t} : t;})   r:(ADD term)* { return tree(t, r); }
+
 term        = f:factor r:(MUL factor)* { return tree(f,r); }
 
 factor = NUM
