@@ -40,10 +40,11 @@ block   =  constants:(block_const)? vars:(block_vars)? procs:(block_proc)* s:sta
   
   block_proc               = PROCEDURE i:PROC_ID SEMICOLON b:block SEMICOLON {return {type: "PROCEDURE", value: i, body: b }; }
   
-statement = i:ID ASSIGN e:exp                                        { return {type: '=', left: i, right: e}; }
-          / CALL i:PROC_ID                                           { return {type: "CALL", value: i}; }
-          / IF e:exp THEN st_true:statement ELSE st_false:statement  { return {type: "IFELSE", condition: e, true_statement: st_true, false_statement: st_false}; }
-	      / IF e:exp THEN s:statement                                { return {type: "IF", condition: e, statement: s}; }
+statement = i:ID ASSIGN e:exp                                               { return {type: '=', left: i, right: e}; }
+          / CALL i:PROC_ID                                                  { return {type: "CALL", value: i}; }
+		  / BEGIN s1:statement s2:(SEMICOLON s:statement {return s;})* END  { return {type: "I_BLOCK", value: [s1].concat(s2)};}
+          / IF e:exp THEN st_true:statement ELSE st_false:statement         { return {type: "IFELSE", condition: e, true_statement: st_true, false_statement: st_false}; }
+	      / IF e:exp THEN s:statement                                       { return {type: "IF", condition: e, statement: s}; }
 		  / /* empty */ { return ""; }
 		
 
@@ -60,6 +61,8 @@ PROCEDURE = _"PROCEDURE"_
 CALL      = _"CALL"_
 CONST     = _"CONST"_
 VAR       = _"VAR"_
+BEGIN     = _"BEGIN"_
+END       = _"END"_
 COMMA     = _","_
 SEMICOLON = _";"_
 DOT       = _"."_
