@@ -38,7 +38,8 @@ block   =  constants:(block_const)? vars:(block_vars)? procs:(block_proc)* s:sta
   
   block_vars               = VAR v1:VAR_ID v2:(COMMA v:VAR_ID {return v})* SEMICOLON {return [v1].concat(v2); }
   
-  block_proc               = PROCEDURE i:PROC_ID SEMICOLON b:block SEMICOLON {return {type: "PROCEDURE", value: i, block: b }; }
+  block_proc               = PROCEDURE i:PROC_ID args:block_proc_args? SEMICOLON b:block SEMICOLON {return args? {type: "PROCEDURE", value: i, parameters: args, block: b} :{type: "PROCEDURE", value: i, block: b }; }
+  block_proc_args          = LEFTPAR i1:ID i2:( COMMA i:ID {return i;} )* RIGHTPAR { return [i1].concat(i2); }
   
 statement = i:ID ASSIGN e:expression                                        { return {type: '=', left: i, right: e}; }
           / CALL i:PROC_ID                                                  { return {type: "CALL", value: i}; }
