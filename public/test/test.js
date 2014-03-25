@@ -35,6 +35,23 @@ suite('Tests', function(){
     assert.equal(obj[0].right.left.type, "+")
   });
 
+  test('Precedencia', function(){
+    obj = pl0.parse("a = 2+3*3 .")
+    assert.equal(obj[0].right.left.type, "NUM")
+  });
+
+  test('Comparación', function(){
+    obj = pl0.parse("IF a == 3 THEN b = 2 .")
+    assert.equal(obj[0].condition.type, "==")
+  });
+
+  test('block', function(){
+    obj = pl0.parse("CONST a = 3; VAR b; PROCEDURE p; a = a + 3; CALL p.")
+    assert.equal(obj[0].left.type, "CONST ID")
+    assert.equal(obj[1].type, "VAR ID")
+    assert.equal(obj[2].type, "PROCEDURE")
+  });
+
   test('CALL', function(){
     obj = pl0.parse("CALL a .")
     assert.equal(obj[0].type, "CALL")
@@ -53,11 +70,6 @@ suite('Tests', function(){
     assert.equal(obj[0].condition.type, "ODD")
   });
 
-  test('Comparación', function(){
-    obj = pl0.parse("IF a == 3 THEN b = 2 .")
-    assert.equal(obj[0].condition.type, "==")
-  });
-
   test('WHILE DO', function(){
     obj = pl0.parse("WHILE a == 3 DO b = b+3.")
     assert.equal(obj[0].type, "WHILE")
@@ -68,11 +80,19 @@ suite('Tests', function(){
     assert.equal(obj[0].type, "BEGIN")
   });
 
-  test('block', function(){
-    obj = pl0.parse("CONST a = 3; VAR b; PROCEDURE p; a = a + 3; CALL p.")
-    assert.equal(obj[0].left.type, "CONST ID")
-    assert.equal(obj[1].type, "VAR ID")
-    assert.equal(obj[2].type, "PROCEDURE")
+  test('Argumentos de CALL y PROCEDURE', function(){
+    obj = pl0.parse("VAR x, squ; PROCEDURE square(x,y,z); BEGIN squ = x * x END; CALL square(x).")
+    assert.equal(obj[3].arguments[0].value, "x")
+
+    obj = pl0.parse("VAR x, squ; PROCEDURE square; BEGIN squ = x * x END; CALL square.")
+    assert.equal(obj[3].arguments, undefined)
+
+    obj = pl0.parse("VAR x, squ; PROCEDURE square(); BEGIN squ = x * x END; CALL square().")
+    assert.equal(obj[3].arguments, undefined)
+  });
+
+  test('Error de sintaxis', function(){
+    assert.throws(function() { pl0.parse("a = 3"); }, /Expected "."/);
   });
 
 });
