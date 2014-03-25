@@ -40,12 +40,13 @@ block   =  constants:(block_const)? vars:(block_vars)? procs:(block_proc)* s:sta
   
   block_proc               = PROCEDURE i:PROC_ID SEMICOLON b:block SEMICOLON {return {type: "PROCEDURE", value: i, body: b }; }
   
-statement = /* empty */{ return ""; }
-  
-  
-st      = i:ID ASSIGN e:exp  { return {type: '=', left: i, right: e}; }
-        / IF e:exp THEN st_true:st ELSE st_false:st { return {type: "IFELSE", condition: e, true_statement: st_true, false_statement: st_false}; }
-	    / IF e:exp THEN s:st                        { return {type: "IF", condition: e, statement: s}; }
+statement = i:ID ASSIGN e:exp                                        { return {type: '=', left: i, right: e}; }
+          / CALL i:PROC_ID                                           { return {type: "CALL", value: i}; }
+          / IF e:exp THEN st_true:statement ELSE st_false:statement  { return {type: "IFELSE", condition: e, true_statement: st_true, false_statement: st_false}; }
+	      / IF e:exp THEN s:statement                                { return {type: "IF", condition: e, statement: s}; }
+		  / /* empty */ { return ""; }
+		
+
 exp     = t:term   r:(ADD term)*   { return tree(t,r); }
 term    = f:factor r:(MUL factor)* { return tree(f,r); }
 
@@ -56,6 +57,7 @@ factor = NUM
 _ = $[ \t\n\r]*
 
 PROCEDURE = _"PROCEDURE"_
+CALL      = _"CALL"_
 CONST     = _"CONST"_
 VAR       = _"VAR"_
 COMMA     = _","_
@@ -69,7 +71,7 @@ RIGHTPAR  = _")"_
 IF        = _"IF"_
 THEN      = _"THEN"_
 ELSE      = _"ELSE"_
-PROC_ID   = _ id:$([a-zA-Z_][a-zA-Z_0-9]*) _   { return { type: 'PROCEDURE ID', value: id }; }
+PROC_ID   = _ id:$([a-zA-Z_][a-zA-Z_0-9]*) _  { return { type: 'PROCEDURE ID', value: id }; }
 CONST_ID  = _ id:$([a-zA-Z_][a-zA-Z_0-9]*) _  { return { type: 'CONST ID', value: id }; }
 VAR_ID    = _ id:$([a-zA-Z_][a-zA-Z_0-9]*) _  { return { type: 'VAR ID', value: id };  }
 ID        = _ id:$([a-zA-Z_][a-zA-Z_0-9]*) _  { return { type: 'ID', value: id }; }
