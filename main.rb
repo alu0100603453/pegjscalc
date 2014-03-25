@@ -23,6 +23,7 @@ helpers do
   end
 end
 
+get('/styles.css'){ scss :styles }
 
 get '/grammar' do
   erb :grammar
