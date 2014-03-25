@@ -32,30 +32,31 @@ block   =  constants:(block_const)? vars:(block_vars)? procs:(block_proc)* s:sta
 }
 
   // Reglas auxiliares para block
-  block_const               = c1:block_const_assign c2:block_const_assign_others* {return [c1].concat(c2); }
+  block_const               = c1:block_const_assign c2:block_const_assign_others* SEMICOLON {return [c1].concat(c2); }
   block_const_assign        = CONST i:CONST_ID ASSIGN n:NUM { return {type: "=", left: i, right: n}; }
   block_const_assign_others = COMMA i:CONST_ID ASSIGN n:NUM { return {type: "=", left: i, right: n}; }
   
-  block_vars               = VAR v1:VAR_ID v2:(COMMA v:VAR_ID {return v})* {return [v1].concat(v2); }
+  block_vars               = VAR v1:VAR_ID v2:(COMMA v:VAR_ID {return v})* SEMICOLON {return [v1].concat(v2); }
   
   block_proc               = PROCEDURE i:PROC_ID SEMICOLON b:block SEMICOLON {return {type: "PROCEDURE", value: i, block: b }; }
   
-statement = i:ID ASSIGN e:exp                                               { return {type: '=', left: i, right: e}; }
+statement = i:ID ASSIGN e:expression                                        { return {type: '=', left: i, right: e}; }
           / CALL i:PROC_ID                                                  { return {type: "CALL", value: i}; }
 		  / BEGIN s1:statement s2:(SEMICOLON s:statement {return s;})* END  { return {type: "I_BLOCK", value: [s1].concat(s2)};}
           / IF c:condition THEN st_true:statement ELSE st_false:statement   { return {type: "IFELSE", condition: c, true_statement: st_true, false_statement: st_false}; }
 	      / IF c:condition THEN s:statement                                 { return {type: "IF", condition: c, statement: s}; }
 		  / WHILE c:condition DO s:statement                                { return {type: "WHILE", condition: c, statement: s}; }
-		  / /* empty */ { return ""; } // TEMP!
+//		  / /* empty */                                                     { return ""; } // Según la gramática de PL/0, el contenido de statement es opcional, por lo que puede ser vacío. Esto debe de estar mal.
 		
-condition = exp // TEMP!!
+condition = ODD e:expression                          { return e; }
+          / e1:expression op:COMPARISON e2:expression { return {type: op, left: e1, right: e2}; }
 		
-exp     = t:term   r:(ADD term)*   { return tree(t,r); }
-term    = f:factor r:(MUL factor)* { return tree(f,r); }
+expression  = t:term   r:(ADD term)*   { return tree(t,r); }
+term        = f:factor r:(MUL factor)* { return tree(f,r); }
 
 factor = NUM
        / ID
-       / LEFTPAR t:exp RIGHTPAR   { return t; }
+       / LEFTPAR t:expression RIGHTPAR   { return t; }
 
 _ = $[ \t\n\r]*
 
@@ -67,9 +68,11 @@ BEGIN     = _"BEGIN"_
 END       = _"END"_
 WHILE     = _"WHILE"_
 DO        = _"DO"_
+ODD       = _"ODD"_
 COMMA     = _","_
 SEMICOLON = _";"_
 DOT       = _"."_
+COMPARISON = _ op:$([=<>!]'='/[<>])_  { return op; }
 ASSIGN    = _ op:'=' _  { return op; }
 ADD       = _ op:[+-] _ { return op; }
 MUL       = _ op:[*/] _ { return op; }
