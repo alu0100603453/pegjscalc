@@ -21,11 +21,14 @@
 }
 
 program = b:block DOT { return b; }
-block   =  c:(c1:block_const_assign c2:block_const_assign_others* {return [c1].concat(c2) })? {return c;}
+block   =  constants:(block_const)? vars:(block_vars)? {return constants.concat(vars);}
 
 // Reglas auxiliares para block
+  block_const               = c1:block_const_assign c2:block_const_assign_others* {return [c1].concat(c2); }
   block_const_assign        = CONST i:CONST_ID ASSIGN n:NUM { return {type: "=", left: i, right: n}; }
   block_const_assign_others = COMMA i:CONST_ID ASSIGN n:NUM { return {type: "=", left: i, right: n}; }
+  
+  block_vars               = VAR v1:VAR_ID v2:(COMMA v:VAR_ID {return v})* {return [v1].concat(v2); }
   
 st      = i:ID ASSIGN e:exp  { return {type: '=', left: i, right: e}; }
         / IF e:exp THEN st_true:st ELSE st_false:st { return {type: "IFELSE", condition: e, true_statement: st_true, false_statement: st_false}; }
@@ -40,6 +43,7 @@ factor = NUM
 _ = $[ \t\n\r]*
 
 CONST    = _"CONST"_
+VAR      = _"VAR"_
 COMMA    = _","_
 DOT      = _"."_
 ASSIGN   = _ op:'=' _  { return op; }
@@ -50,14 +54,9 @@ RIGHTPAR = _")"_
 IF       = _"IF"_
 THEN     = _"THEN"_
 ELSE     = _"ELSE"_
-CONST_ID = _ id:$[a-zA-Z_][a-zA-Z_0-9]* _ 
-            { 
-              return { type: 'CONST ID', value: id }; 
-            }
-ID       = _ id:$[a-zA-Z_][a-zA-Z_0-9]* _ 
-            { 
-              return { type: 'ID', value: id }; 
-            }
+CONST_ID = _ id:$[a-zA-Z_][a-zA-Z_0-9]* _  { return { type: 'CONST ID', value: id }; }
+VAR_ID   = _ id:$[a-zA-Z_][a-zA-Z_0-9]* _  { return { type: 'VAR ID', value: id };  }
+ID       = _ id:$[a-zA-Z_][a-zA-Z_0-9]* _  { return { type: 'ID', value: id }; }
 NUM   = _ digits:$[0-9]+ _ 
             { 
               return { type: 'NUM', value: parseInt(digits, 10) }; 
