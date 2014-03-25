@@ -56,7 +56,7 @@ pl0 = (function() {
         peg$c13 = function(i, e) { return {type: '=', left: i, right: e}; },
         peg$c14 = function(i, args) { return args? {type: "CALL", arguments: args, value: i} : {type: "CALL", value: i}; },
         peg$c15 = function(s) {return s;},
-        peg$c16 = function(s1, s2) { return {type: "BLOCK", value: [s1].concat(s2)};},
+        peg$c16 = function(s1, s2) { return {type: "BEGIN", value: [s1].concat(s2)};},
         peg$c17 = function(c, st_true, st_false) { return {type: "IFELSE", condition: c, true_statement: st_true, false_statement: st_false}; },
         peg$c18 = function(c, s) { return {type: "IF", condition: c, statement: s}; },
         peg$c19 = function(c, s) { return {type: "WHILE", condition: c, statement: s}; },
