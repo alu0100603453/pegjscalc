@@ -20,11 +20,13 @@
   }
 }
 
-st     = i:ID ASSIGN e:exp  { return {type: '=', left: i, right: e}; }
-       / IF e:exp THEN st_true:st ELSE st_false:st { return {type: "IFELSE", condition: e, true_statement: st_true, false_statement: st_false}; }
-	   / IF e:exp THEN s:st                        { return {type: "IF", condition: e, statement: s}; }
-exp    = t:term   r:(ADD term)*   { return tree(t,r); }
-term   = f:factor r:(MUL factor)* { return tree(f,r); }
+program = b:block DOT { return b; }
+block   = /* empty */{return ""}
+st      = i:ID ASSIGN e:exp  { return {type: '=', left: i, right: e}; }
+        / IF e:exp THEN st_true:st ELSE st_false:st { return {type: "IFELSE", condition: e, true_statement: st_true, false_statement: st_false}; }
+	    / IF e:exp THEN s:st                        { return {type: "IF", condition: e, statement: s}; }
+exp     = t:term   r:(ADD term)*   { return tree(t,r); }
+term    = f:factor r:(MUL factor)* { return tree(f,r); }
 
 factor = NUMBER
        / ID
@@ -32,6 +34,7 @@ factor = NUMBER
 
 _ = $[ \t\n\r]*
 
+DOT      = _'.'_
 ASSIGN   = _ op:'=' _  { return op; }
 ADD      = _ op:[+-] _ { return op; }
 MUL      = _ op:[*/] _ { return op; }
