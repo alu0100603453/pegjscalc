@@ -42,7 +42,7 @@ pl0 = (function() {
           if(constants) ids = ids.concat(constants);
           if(vars) ids = ids.concat(vars);
           if(procs) ids = ids.concat(procs);
-          
+
           return ids.concat([s]);
         },
         peg$c5 = function(c1, c2) {return [c1].concat(c2); },
@@ -56,11 +56,11 @@ pl0 = (function() {
         peg$c13 = function(i, e) { return {type: '=', left: i, right: e}; },
         peg$c14 = function(i, args) { return args? {type: "CALL", arguments: args, value: i} : {type: "CALL", value: i}; },
         peg$c15 = function(s) {return s;},
-        peg$c16 = function(s1, s2) { return {type: "I_BLOCK", value: [s1].concat(s2)};},
+        peg$c16 = function(s1, s2) { return {type: "BLOCK", value: [s1].concat(s2)};},
         peg$c17 = function(c, st_true, st_false) { return {type: "IFELSE", condition: c, true_statement: st_true, false_statement: st_false}; },
         peg$c18 = function(c, s) { return {type: "IF", condition: c, statement: s}; },
         peg$c19 = function(c, s) { return {type: "WHILE", condition: c, statement: s}; },
-        peg$c20 = function(e) { return e; },
+        peg$c20 = function(e) { return {type: "ODD", value: e}; },
         peg$c21 = function(e1, op, e2) { return {type: op, left: e1, right: e2}; },
         peg$c22 = function(p, t) {return p?{type: p, value: t} : t;},
         peg$c23 = function(t, r) { return tree(t, r); },

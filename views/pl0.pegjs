@@ -47,7 +47,7 @@ block   =  constants:(block_const)? vars:(block_vars)? procs:(block_proc)* s:sta
 // Statement
 statement   = i:ID ASSIGN e:expression                                        { return {type: '=', left: i, right: e}; }
             / CALL i:PROC_ID args:statement_call_arguments?                   { return args? {type: "CALL", arguments: args, value: i} : {type: "CALL", value: i}; }
-            / BEGIN s1:statement s2:(SEMICOLON s:statement {return s;})* END  { return {type: "I_BLOCK", value: [s1].concat(s2)};}
+            / BEGIN s1:statement s2:(SEMICOLON s:statement {return s;})* END  { return {type: "BLOCK", value: [s1].concat(s2)};}
             / IF c:condition THEN st_true:statement ELSE st_false:statement   { return {type: "IFELSE", condition: c, true_statement: st_true, false_statement: st_false}; }
             / IF c:condition THEN s:statement                                 { return {type: "IF", condition: c, statement: s}; }
             / WHILE c:condition DO s:statement                                { return {type: "WHILE", condition: c, statement: s}; }
@@ -56,7 +56,7 @@ statement   = i:ID ASSIGN e:expression                                        { 
   statement_call_arguments    = LEFTPAR i:(i1:(ID/NUM) i2:( COMMA i:(ID/NUM) {return i;} )* {return [i1].concat(i2)})? RIGHTPAR {return i};
 
 // Condición
-condition   = ODD e:expression                          { return e; }
+condition   = ODD e:expression                          { return {type: "ODD", value: e}; }
             / e1:expression op:COMPARISON e2:expression { return {type: op, left: e1, right: e2}; }
 
 // Expressión
