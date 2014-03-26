@@ -95,8 +95,11 @@ RIGHTPAR  = _")"_
 IF        = _"IF"_
 THEN      = _"THEN"_
 ELSE      = _"ELSE"_
-PROC_ID   = _ id:$([a-zA-Z_][a-zA-Z_0-9]*) _  { return { type: 'PROCEDURE ID', value: id }; }
-CONST_ID  = _ id:$([a-zA-Z_][a-zA-Z_0-9]*) _  { return { type: 'CONST ID', value: id }; }
-VAR_ID    = _ id:$([a-zA-Z_][a-zA-Z_0-9]*) _  { return { type: 'VAR ID', value: id };  }
-ID        = _ id:$([a-zA-Z_][a-zA-Z_0-9]*) _  { return { type: 'ID', value: id }; }
+PROC_ID   = _ !RESERVED_WORDS id:$([a-zA-Z_][a-zA-Z_0-9]*) _  { return { type: 'PROCEDURE ID', value: id }; }
+CONST_ID  = _ !RESERVED_WORDS id:$([a-zA-Z_][a-zA-Z_0-9]*) _  { return { type: 'CONST ID', value: id }; }
+VAR_ID    = _ !RESERVED_WORDS id:$([a-zA-Z_][a-zA-Z_0-9]*) _  { return { type: 'VAR ID', value: id };  }
+ID        = _ !RESERVED_WORDS id:$([a-zA-Z_][a-zA-Z_0-9]*) _  { return { type: 'ID', value: id }; }
 NUM       = _ digits:$[0-9]+ _              { return { type: 'NUM', value: parseInt(digits, 10) }; }
+
+// Palabras reservadas:
+RESERVED_WORDS = PROCEDURE / CALL / CONST / VAR / BEGIN / END / WHILE / DO / ODD / IF / THEN / ELSE
