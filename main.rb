@@ -46,20 +46,22 @@ end
 post '/save' do
   pp params
   name = params[:fname]
-  c  = PL0Program.first(:name => name)
-  puts "prog <#{c.inspect}>"
-  if c
-    c.source = params["input"]
-    c.save
-  else
-    if PL0Program.all.size > 9
-      c = PL0Program.all.sample
-      c.destroy
+  if name != "test"
+    c  = PL0Program.first(:name => name)
+    puts "prog <#{c.inspect}>"
+    if c
+      c.source = params["input"]
+      c.save
+    else
+      if PL0Program.all.size > 9
+        c = PL0Program.all.sample
+        c.destroy
+      end
+      c = PL0Program.new
+      c.name = params["fname"]
+      c.source = params["input"]
+      c.save
     end
-    c = PL0Program.new
-    c.name = params["fname"]
-    c.source = params["input"]
-    c.save
   end
   pp c
   redirect '/'

@@ -1,11 +1,12 @@
 <h1>Analizador de PL0 ampliado usando PEG.js</h1>
 <div id="content">
-  <p class="loadfile">
-    <input type="file" id="examples" />
-  </p>
+  <div class="loadfile">
+    <input type="file" class="hidden file" id="examples" />
+    <input class="styled file"/><p class="lfile">Load File</p>
+  </div>
   <p>
   <nav>
-  <ul>
+  <ul class="programs">
     <% programs.each do |p| %>
       <li><a href="<%= p.name %>" <%=current?('/'+p.name)%>><%= p.name %></a></li>
     <% end %>
@@ -16,9 +17,11 @@
       <td>
         <form action="/save" method="post">
           <br>
-          <textarea id="input" name="input"  autofocus cols = "40" rows = "4">
+	  <div class="textar">
+            <textarea id="input" name="input"  autofocus cols = "40" rows = "4">
 <%= source %>
-          </textarea>
+            </textarea>
+	  </div>
           <br/>
           <label for="saveas">Save as</label>
           <input id="saveas" type="text" name="fname"
